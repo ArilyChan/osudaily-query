@@ -1,6 +1,8 @@
 "use strict";
 
 const utils = require('../utils');
+const chartistSvg = require('svg-chartist');
+const { convert } = require('convert-svg-to-png');
 
 // 所有的 dateString 均为 2017-01-01 这种格式
 
@@ -166,9 +168,17 @@ class Mode {
         if (xName === yName) throw "x轴与y轴数据不能相同";
         if (keys.indexOf(xName) < 0) throw "不支持的X轴数据";
         if (keys.indexOf(yName) < 0) throw "不支持的y轴数据";
-        return this.lines.map((line) => {
-            return { x: line[xName], y: line[yName] }
+        let points = {};
+        points.x = [];
+        points.y = [];
+        this.lines.map((line) => {
+            points.x.push(line[xName].toString());
+            points.y.push(line[yName]);
         });
+        // 按时间从旧到新
+        points.x = points.x.reverse();
+        points.y = points.y.reverse();
+        return points;
     }
 
 }
@@ -230,18 +240,53 @@ class UserFull {
         }
     }
 
+    // 减少x轴重叠
+    /**
+     * @param {Array<String>} xLabels 
+     * @param {Number} leftCounts 
+     */
+    reduceXLabels(xLabels, leftCounts) {
+        // 首尾均保留，中间的看leftCounts
+        let counts = xLabels.length;
+        let interval = Math.ceil((counts - 1) / (leftCounts - 1));
+        let newXLabels = [];
+        newXLabels[0] = xLabels[0];
+        for (let i = 1; i < counts - 1; i++) {
+            if (i % interval === 0) newXLabels.push(xLabels[i]);
+            else newXLabels.push("");
+        }
+        newXLabels.push(xLabels[counts - 1]);
+        return newXLabels;
+    }
+
     /**
      * 获取绘制折线图所用的点
      * @param {0|1|2|3} mode
      * @param {String} xName x轴属性
      * @param {String} yName y轴属性
      */
-    getChartPoints(mode, xName, yName) {
+    async getChartPoints(mode, xName, yName) {
         try {
             const points = this.modes[mode].getChartPoints(xName, yName);
-            console.log(points);
-            // TODO
-            return "该功能尚未完成，敬请期待";
+            const data = {
+                labels: this.reduceXLabels(points.x, 5),
+                series: [
+                    points.y
+                ]
+            };
+
+            const options = {
+                width: 1920,
+                height: 1080,
+                fullWidth: true,
+                chartPadding: {
+                    right: 333
+                }
+            }
+
+            let svg = await chartistSvg('line', data, options);
+            let png = await convert(svg);
+            return png.toString('base64');
         }
         catch (ex) {
             return ex;

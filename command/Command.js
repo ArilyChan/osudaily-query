@@ -137,6 +137,29 @@ class Command {
         return await new getUserData(this.globalConstant.host, this.globalConstant.apiKey, options).compareByDays(this.globalConstant.storagePath);
     }
 
+    async showChart(isMe) {
+        let args = this.argString.split(" ");
+        let options = {};
+        if (isMe) {
+            await this.getUserInfo();
+            options.u = this.userInfo.osuId;
+            options.m = this.userInfo.defaultMode;
+            options.xtitle = args[0];
+            options.ytitle = args[1];
+            if (!options.u) return "请先使用setid绑定osu账号再使用me后缀指令";
+            if (args.length <1) return "请先查看odhelp";
+        }
+        else {
+            options.u = args[0];
+            options.m = utils.getMode(args[1]);
+            options.xtitle = args[2];
+            options.ytitle = args[3];
+            if (!options.u) return "请指定玩家ID";
+            if (args.length <3) return "请先查看odhelp";
+        }
+        return await new getUserData(this.globalConstant.host, this.globalConstant.apiKey, options).getChart(this.globalConstant.storagePath);
+    }
+
     async apply() {
         try {
             if (!this.cutCommand()) return "";
@@ -151,7 +174,7 @@ class Command {
                 help += this.globalConstant.prefix + "oddate(me) (osuId) (mode) [旧日期 2017-01-01] (新日期 2018-01-01) 对比日期查询\n";
                 help += this.globalConstant.prefix + "oddays(me) (osuId) (mode) [天数] (新日期 2018-01-01) 对比天数查询\n";
                 help += this.globalConstant.prefix + "odmill(me) (osuId) mania百万成绩数量查询\n";
-
+                help += this.globalConstant.prefix + "odchart(me) (osuId) (mode) [x轴] [y轴]\n";
                 return help;
             }
             else if (this.commandString === "odsetid") return await this.bind();
@@ -164,7 +187,8 @@ class Command {
             else if (this.commandString === "oddaysme") return await this.showCompareDays(true);
             else if (this.commandString === "odmill") return await this.showMillionCount(false);
             else if (this.commandString === "odmillme") return await this.showMillionCount(true);
-
+            else if (this.commandString === "odchart") return await this.showChart(false);
+            else if (this.commandString === "odchartme") return await this.showChart(true);
             return "";
         }
         catch (ex) {
