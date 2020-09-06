@@ -15,7 +15,7 @@ class osudailyQuery {
         this.globalConstant = {};
         this.globalConstant.apiKey = params.apiKey || "";
         this.globalConstant.host = params.host || "osudaily.net";
-        this.database = params.database || './Opsbot-v1.db';
+        this.database = params.database || './osudaily-v1.db';
         this.globalConstant.nedb = require('./database/nedb')(this.database);
         this.prefixs = params.prefixs || ["?", "？"];
         this.globalConstant.prefix = this.prefixs[0];
