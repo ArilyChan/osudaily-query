@@ -1,6 +1,6 @@
 {
   "name": "osudaily-query",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,6 +11,7 @@
   "dependencies": {
     "fs": "0.0.1-security",
     "nedb": "^1.8.0",
+    "node-fetch": "^2.6.1",
     "path": "^0.12.7"
   }
 }

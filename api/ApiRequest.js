@@ -1,62 +1,13 @@
 "use strict";
 
 const querystring = require('querystring');
-const https = require('https');
+const fetch = require('node-fetch')
 
 class OsuApi {
-    static apiRequest(options) {
-        return new Promise((resolve, reject) => {
-            const contents = querystring.stringify(options.data);
-            const requestOptions = {
-                host: options.host,
-                port: 443,
-                type: 'https',
-                method: 'GET',
-                path: '/api' + options.path + '?' + contents,
-                headers: {
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-                    'Connection': 'keep-alive',
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Content-Length': contents.length
-                }
-            }
-            let _data = '';
-
-            console.log("发送请求：" + requestOptions.host + requestOptions.path);
-
-            const req = https.request(requestOptions, function (res) {
-                res.setEncoding('utf8');
-                res.on('data', function (chunk) {
-                    _data += chunk;
-                });
-                res.on('end', function () {
-                    resolve(_data);
-                });
-                res.on('error', function (e) {
-                    console.dir('problem with request: ' + e.message);
-                    reject(e)
-                });
-            });
-            req.write(contents);
-            req.end();
-        })
-    }
-
     static async apiCall(_path, _data, _host) {
-        return await this.apiRequest({
-            path: _path,
-            data: _data,
-            host: _host
-        }).then(data => {
-            try {
-                if (!data) return { error: "获取数据失败" };
-                return JSON.parse(data);
-            }
-            catch (ex) {
-                console.log(ex);
-                return { error: "获取数据失败" };
-            }
-        });
+        const contents = querystring.stringify(_data);
+        const url = "https://" + _host + "/api" + _path + '?' + contents;
+        return await fetch(url).then(res => res.json());
     }
 
     /**
