@@ -286,7 +286,8 @@ class UserFull {
 
             let svg = await chartistSvg('line', data, options);
             let png = await convert(svg);
-            return png.toString('base64');
+            let base64 = png.toString('base64');
+            return `[CQ:image,file=base64://${base64}]`;
         }
         catch (ex) {
             return ex;
