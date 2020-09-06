@@ -43,6 +43,7 @@ class getUserData {
     }
 
     async getUserSimple() {
+        delete this.options.m; // 全mod
         const user = await OsudailyApi.getUser(this.options, this.host, this.apiKey);
         if (user.error) throw user.error + "\n" + utils.apiObjectToString(this.options) + "\n可能该用户尚未注册osudaily.net账号";
         let userObject = new UserMin(user);
