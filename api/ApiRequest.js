@@ -5,9 +5,14 @@ const fetch = require('node-fetch')
 
 class OsuApi {
     static async apiCall(_path, _data, _host) {
-        const contents = querystring.stringify(_data);
-        const url = "https://" + _host + "/api" + _path + '?' + contents;
-        return await fetch(url).then(res => res.json());
+        try {
+            const contents = querystring.stringify(_data);
+            const url = "https://" + _host + "/api" + _path + '?' + contents;
+            return await fetch(url).then(res => res.json());
+        }
+        catch (ex) {
+            return "获取数据失败";
+        }
     }
 
     /**
