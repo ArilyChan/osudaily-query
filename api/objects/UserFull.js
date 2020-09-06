@@ -272,16 +272,30 @@ class UserFull {
                 labels: this.reduceXLabels(points.x, 5),
                 series: [
                     points.y
-                ]
+                ],
+                title: this.username + " - " + utils.getModeString(mode),
+                subtitle: "X: " + xName + "  Y: " + yName
             };
 
             const options = {
+                options:{
+                    showGridBackground: true
+                },
                 width: 1920,
-                height: 1080,
+                height: 800,
                 fullWidth: true,
                 chartPadding: {
-                    right: 333
-                }
+                    right: 80
+                },
+                title: {
+                    fill: "#000000"
+                }, 
+                subtitle: {
+                    fill: "#000000"
+                },
+                css: `.ct-chart-line{
+                    background: #FFFFFF
+                  }`,
             }
 
             let svg = await chartistSvg('line', data, options);
