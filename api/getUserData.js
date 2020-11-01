@@ -93,12 +93,8 @@ class getUserData {
         }
     }
 
-    async compareByDate(dirPath) {
+    async compareByDate() {
         try {
-            //let today = new Date().toDateString();
-            //let user = this.loadUserFull(dirPath, this.options.u);
-            //if (!user || user.getDateString() !== today) user = await this.getUserFull();
-            //this.saveUserFull(dirPath, user);
             let user = await this.getUserFull();
             return user.compareByDate(this.params.m, this.params.oldDate, this.params.newDate)
         }
@@ -107,12 +103,8 @@ class getUserData {
         }
     }
 
-    async compareByDays(dirPath) {
+    async compareByDays() {
         try {
-            //let today = new Date().toDateString();
-            //let user = this.loadUserFull(dirPath, this.options.u);
-            //if (!user || user.getDateString() !== today) user = await this.getUserFull();
-            //this.saveUserFull(dirPath, user);
             let user = await this.getUserFull();
             return user.compareByDays(this.params.m, this.params.days, this.params.newDate)
         }
@@ -121,12 +113,8 @@ class getUserData {
         }
     }
 
-    async getChart(dirPath) {
+    async getChart() {
         try {
-            //let today = new Date().toDateString();
-            //let user = this.loadUserFull(dirPath, this.options.u);
-            //if (!user || user.getDateString() !== today) user = await this.getUserFull();
-            //this.saveUserFull(dirPath, user);
             let user = await this.getUserFull();
             return user.getChartPoints(this.params.m, this.params.xtitle, this.params.ytitle);
         }

@@ -1,8 +1,7 @@
 "use strict";
 
 const utils = require('../utils');
-const chartistSvg = require('svg-chartist');
-const { convert } = require('convert-svg-to-png');
+const Chart = require('linechart');
 
 // 所有的 dateString 均为 2017-01-01 这种格式
 
@@ -164,21 +163,31 @@ class Mode {
      * @param {String} yName y轴属性
      */
     getChartPoints(xName, yName) {
-        const keys = ["A", "S", "SS", "accuracy", "date", "playcount", "pp", "rankcountry", "rankedscore", "rankworld", "totalscore"];
+        // const keys = ["A", "S", "SS", "accuracy", "date", "playcount", "pp", "rankcountry", "rankedscore", "rankworld", "totalscore"];
+        const xkeys = ["date", "playcount", "rankedscore", "totalscore"];
+        const ykeys = ["A", "S", "SS", "accuracy", "playcount", "pp", "rankcountry", "rankedscore", "rankworld", "totalscore"];
         if (xName === yName) throw "x轴与y轴数据不能相同";
-        if (keys.indexOf(xName) < 0) throw "不支持的X轴数据";
-        if (keys.indexOf(yName) < 0) throw "不支持的y轴数据";
-        let points = {};
-        points.x = [];
-        points.y = [];
-        this.lines.map((line) => {
-            points.x.push(line[xName].toString());
-            points.y.push(line[yName]);
-        });
+        if (xkeys.indexOf(xName) < 0) throw "不支持的X轴数据\n可用数据：" + xkeys.join(", ");
+        if (ykeys.indexOf(yName) < 0) throw "不支持的y轴数据\n可用数据：" + ykeys.join(", ");
+        let xDateMode = false;
+        let xDateLabel = [];
+        let points = [];
+        if (xName === "date") {
+            xDateMode = true;
+            this.lines.map((line, index) => {
+                points.push({ x: this.lines.length - index, y: line[yName] });
+                xDateLabel.push(line[xName]);
+            });
+        }
+        else {
+            this.lines.map((line) => {
+                points.push({ x: line[xName], y: line[yName] });
+            });
+        }
         // 按时间从旧到新
-        points.x = points.x.reverse();
-        points.y = points.y.reverse();
-        return points;
+        points = points.reverse();
+        xDateLabel = xDateLabel.reverse();
+        return { points, xDateMode, xDateLabel };
     }
 
 }
@@ -267,40 +276,31 @@ class UserFull {
      */
     async getChartPoints(mode, xName, yName) {
         try {
-            const points = this.modes[mode].getChartPoints(xName, yName);
-            const data = {
-                labels: this.reduceXLabels(points.x, 5),
-                series: [
-                    points.y
-                ],
-                title: this.username + " - " + utils.getModeString(mode),
-                subtitle: "X: " + xName + "  Y: " + yName
-            };
-
-            const options = {
-                options:{
-                    showGridBackground: true
+            const pointsInfo = this.modes[mode].getChartPoints(xName, yName);
+            const chart = new Chart(pointsInfo.points, {
+                padding: {
+                    up: 100,
+                    down: 80,
+                    left: 100,
+                    right: 100
                 },
-                width: 1920,
-                height: 800,
-                fullWidth: true,
-                chartPadding: {
-                    right: 80
+                size: {
+                    width: 1024,
+                    height: 768
                 },
-                title: {
-                    fill: "#000000"
-                }, 
-                subtitle: {
-                    fill: "#000000"
+                label: {
+                    title: this.username + " 的 " + xName + "-" + yName + " 折线图（" + utils.getModeString(mode) + "）",
+                    titleX: xName,
+                    titleY: yName,
+                    divideX: (xName === "date") ? 5 : 10,
+                    divideY: 10
                 },
-                css: `.ct-chart-line{
-                    background: #FFFFFF
-                  }`,
-            }
-
-            let svg = await chartistSvg('line', data, options);
-            let png = await convert(svg);
-            let base64 = png.toString('base64');
+                font: "15px 宋体",
+                xDateMode: pointsInfo.xDateMode,
+                xDateLabel: pointsInfo.xDateLabel,
+            });
+            const picUrl = chart.draw();
+            const base64 = picUrl.substring(picUrl.indexOf(",") + 1);
             return `[CQ:image,file=base64://${base64}]`;
         }
         catch (ex) {
