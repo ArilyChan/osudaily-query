@@ -284,6 +284,16 @@ class UserFull {
                     left: 100,
                     right: 100
                 },
+                color: {
+                    background: "white",
+                    title: "#000000",
+                    titleX: "#005cc5",
+                    titleY: "#7d04c8",
+                    coordinate: "#000000",
+                    line: "#ff9898",
+                    pointFill: "#ff5757",
+                    grid: "#999999"
+                },
                 size: {
                     width: 1024,
                     height: 768
