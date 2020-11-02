@@ -1,6 +1,6 @@
 {
   "name": "osudaily-query",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "author": "Exsper",
   "license": "MIT",
   "dependencies": {
-    "linechart": "github:Exsper/linechart",
+    "lchart": "0.0.2",
     "nedb": "^1.8.0",
     "node-fetch": "^2.6.1",
     "path": "^0.12.7"

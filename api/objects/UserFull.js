@@ -1,7 +1,7 @@
 "use strict";
 
 const utils = require('../utils');
-const Chart = require('linechart');
+const Chart = require('lchart');
 
 // 所有的 dateString 均为 2017-01-01 这种格式
 
